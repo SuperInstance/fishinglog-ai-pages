@@ -1,152 +1,1258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fishing Log AI -- PLATO-Powered Catch Tracking</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fishing Log AI — PLATO-Powered Catch Tracking</title>
   <style>
-    :root { --bg: #0a0e17; --surface: #121825; --border: #1e2a3a; --text: #e2e8f0; --muted: #64748b; --accent: #22c55e; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 3rem; border-bottom: 1px solid var(--border); }
-    .logo { font-weight: 700; font-size: 1.2rem; }
-    .hero { text-align: center; padding: 5rem 0 3rem; }
-    .hero h1 { font-size: 3rem; font-weight: 700; margin-bottom: 1.25rem; }
-    .hero h1 span { color: var(--accent); }
-    .hero .sub { font-size: 1.25rem; color: var(--muted); max-width: 600px; margin: 0 auto 2rem; }
-    .badge-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
-    .badge { background: var(--surface); border: 1px solid var(--border); padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.8rem; }
-    .section { padding: 4rem 0; }
-    .section h2 { font-size: 2rem; margin-bottom: 0.75rem; }
-    .section .lead { color: var(--muted); max-width: 680px; margin-bottom: 2.5rem; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
-    .card h3 { font-size: 1.1rem; margin-bottom: 0.75rem; }
-    .card p { color: var(--muted); font-size: 0.9rem; }
-    .plato-box { background: linear-gradient(135deg, #0f1a0f 0%, #0a1a0a 100%); border: 1px solid #1a3a1a; border-radius: 16px; padding: 2rem; text-align: center; margin: 2rem 0; }
-    .plato-box h3 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent); }
-    .plato-box p { color: var(--muted); max-width: 560px; margin: 0 auto; }
-    .stats-row { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
-    .stat { text-align: center; }
-    .stat .num { font-size: 2rem; font-weight: 700; color: var(--accent); }
-    .stat .label { font-size: 0.8rem; color: var(--muted); }
-    .cta { text-align: center; padding: 4rem 0; }
-    .cta h2 { font-size: 2.25rem; margin-bottom: 1rem; }
-    .cta p { color: var(--muted); margin-bottom: 2rem; }
-    .btn { display: inline-block; background: var(--accent); color: white; padding: 0.875rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; }
-    .how-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
-    .how-step { display: flex; gap: 1.5rem; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
-    .how-step:last-child { border-bottom: none; }
-    .step-num { width: 40px; height: 40px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
-    .step-content h4 { font-size: 1.05rem; margin-bottom: 0.4rem; }
-    .step-content p { color: var(--muted); font-size: 0.9rem; }
-    .live-bar { background: var(--surface); border-top: 1px solid var(--border); padding: 0.75rem 0; text-align: center; }
-    .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 0.4rem; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-    footer { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
-    @media (max-width: 768px) { .hero h1 { font-size: 2rem; } }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-deep: #0a0f1e;
+      --navy-mid: #111827;
+      --navy-card: #1a2236;
+      --navy-border: #1e2d4a;
+      --blue-accent: #2b7fff;
+      --blue-glow: #4a9eff;
+      --blue-dim: #1a4a8a;
+      --cyan-beacon: #00c2ff;
+      --text-primary: #e8eef7;
+      --text-secondary: #8ba3c2;
+      --text-muted: #4d6180;
+      --success: #00d68f;
+      --warning: #ffb547;
+      --danger: #ff5a5a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--navy-deep);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(10, 15, 30, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--navy-border);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-brand svg { width: 28px; height: 28px; }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--blue-accent); }
+
+    .nav-cta {
+      background: var(--blue-accent);
+      color: #fff !important;
+      padding: 0.45rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600 !important;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--blue-glow) !important; color: #fff !important; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 5rem;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 30%, rgba(43, 127, 255, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 70%, rgba(0, 194, 255, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* radar rings */
+    .radar-bg {
+      position: absolute;
+      width: 600px; height: 600px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.07;
+      pointer-events: none;
+    }
+
+    .radar-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid var(--cyan-beacon);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: radar-ping 4s ease-out infinite;
+    }
+
+    .radar-ring:nth-child(1) { width: 120px; height: 120px; animation-delay: 0s; }
+    .radar-ring:nth-child(2) { width: 240px; height: 240px; animation-delay: 0.8s; }
+    .radar-ring:nth-child(3) { width: 360px; height: 360px; animation-delay: 1.6s; }
+    .radar-ring:nth-child(4) { width: 480px; height: 480px; animation-delay: 2.4s; }
+    .radar-ring:nth-child(5) { width: 600px; height: 600px; animation-delay: 3.2s; }
+
+    @keyframes radar-ping {
+      0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(43, 127, 255, 0.12);
+      border: 1px solid rgba(43, 127, 255, 0.3);
+      color: var(--blue-glow);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--blue-accent), var(--cyan-beacon));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .btn-primary {
+      background: var(--blue-accent);
+      color: #fff;
+      padding: 0.75rem 1.8rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover { background: var(--blue-glow); transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      padding: 0.75rem 1.8rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      border: 1px solid var(--navy-border);
+      transition: border-color 0.2s, background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--blue-accent);
+      background: rgba(43, 127, 255, 0.06);
+    }
+
+    /* live widget */
+    .tile-widget {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 0 30px rgba(43, 127, 255, 0.08);
+    }
+
+    .tile-widget .w-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+
+    .tile-widget .w-count {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--cyan-beacon);
+      line-height: 1;
+    }
+
+    .tile-widget .w-room {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .tile-widget .w-room span {
+      color: var(--blue-glow);
+      font-weight: 600;
+    }
+
+    .tile-indicator {
+      width: 10px; height: 10px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── SECTION COMMON ── */
+    section { padding: 5rem 2rem; }
+
+    .container { max-width: 1140px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue-accent);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-sub {
+      color: var(--text-secondary);
+      max-width: 600px;
+      font-size: 1.05rem;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ── FEATURES ── */
+    .features { background: var(--navy-mid); }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 14px;
+      padding: 2rem;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue-accent), var(--cyan-beacon));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(43, 127, 255, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(43, 127, 255, 0.12);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: rgba(43, 127, 255, 0.12);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .feature-icon svg { width: 24px; height: 24px; color: var(--blue-accent); }
+
+    .feature-card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+      background: rgba(43, 127, 255, 0.1);
+      color: var(--blue-glow);
+      border: 1px solid rgba(43, 127, 255, 0.2);
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how { background: var(--navy-deep); }
+
+    .steps-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      position: relative;
+    }
+
+    .steps-row::before {
+      content: '';
+      position: absolute;
+      top: 36px;
+      left: 16.67%;
+      right: 16.67%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue-accent), var(--cyan-beacon), var(--blue-accent));
+      opacity: 0.3;
+    }
+
+    .step {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      position: relative;
+    }
+
+    .step-num {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: var(--navy-card);
+      border: 2px solid var(--blue-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.2rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--blue-accent);
+      position: relative;
+      z-index: 1;
+    }
+
+    .step h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .step p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .step .step-cmd {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      background: rgba(43, 127, 255, 0.08);
+      border: 1px solid rgba(43, 127, 255, 0.2);
+      color: var(--blue-glow);
+      padding: 0.3rem 0.7rem;
+      border-radius: 5px;
+      display: inline-block;
+      margin-top: 0.6rem;
+    }
+
+    /* ── PLATO ARCH ── */
+    .plato { background: var(--navy-mid); }
+
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .arch-card {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 14px;
+      padding: 1.8rem;
+    }
+
+    .arch-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .arch-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .arch-card code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      background: rgba(0, 194, 255, 0.08);
+      border: 1px solid rgba(0, 194, 255, 0.15);
+      color: var(--cyan-beacon);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .delta-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .delta-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      padding: 0.8rem 1rem;
+      background: rgba(10, 15, 30, 0.5);
+      border-radius: 8px;
+      border-left: 3px solid var(--blue-accent);
+    }
+
+    .delta-item.success { border-left-color: var(--success); }
+    .delta-item.warning { border-left-color: var(--warning); }
+    .delta-item.cyan { border-left-color: var(--cyan-beacon); }
+
+    .delta-item .d-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .delta-item .d-text { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; }
+    .delta-item .d-text strong { color: var(--text-primary); }
+
+    .presence-diagram {
+      background: rgba(10, 15, 30, 0.6);
+      border: 1px solid var(--navy-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+
+    .presence-diagram .line { display: block; }
+    .presence-diagram .key { color: var(--cyan-beacon); }
+    .presence-diagram .val { color: var(--blue-glow); }
+    .presence-diagram .comment { color: var(--text-muted); font-style: italic; }
+
+    /* ── LIVE FEED ── */
+    .live-feed {
+      background: var(--navy-deep);
+      padding: 3rem 2rem;
+    }
+
+    .feed-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .feed-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .feed-header h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .feed-list {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 0.88rem;
+    }
+
+    .feed-row {
+      display: grid;
+      grid-template-columns: 70px 1fr 140px 90px;
+      padding: 0.75rem 1.2rem;
+      border-bottom: 1px solid var(--navy-border);
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.15s;
+    }
+
+    .feed-row:last-child { border-bottom: none; }
+    .feed-row:hover { background: rgba(43, 127, 255, 0.04); }
+
+    .feed-row .t-time { color: var(--text-muted); font-family: 'Courier New', monospace; font-size: 0.8rem; }
+    .feed-row .t-species { color: var(--blue-glow); font-weight: 600; }
+    .feed-row .t-ground { color: var(--text-secondary); }
+    .feed-row .t-weight { color: var(--success); font-weight: 700; }
+    .feed-row .t-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .feed-row .t-badge.logged { background: rgba(0, 214, 143, 0.12); color: var(--success); border: 1px solid rgba(0, 214, 143, 0.25); }
+    .feed-row .t-badge.quota { background: rgba(255, 181, 71, 0.12); color: var(--warning); border: 1px solid rgba(255, 181, 71, 0.25); }
+    .feed-row .t-badge.synced { background: rgba(0, 194, 255, 0.12); color: var(--cyan-beacon); border: 1px solid rgba(0, 194, 255, 0.25); }
+
+    /* ── QUOTA STRIP ── */
+    .quota-strip {
+      background: var(--navy-mid);
+      padding: 3rem 2rem;
+    }
+
+    .quota-inner { max-width: 900px; margin: 0 auto; }
+
+    .quota-inner h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .quota-inner > p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      margin-bottom: 2rem;
+    }
+
+    .quota-bars { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .quota-row { }
+
+    .quota-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.4rem;
+    }
+
+    .quota-meta .q-name { font-weight: 600; font-size: 0.95rem; }
+    .quota-meta .q-numbers { font-size: 0.82rem; color: var(--text-muted); font-family: 'Courier New', monospace; }
+
+    .quota-bar-bg {
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .quota-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 1s ease;
+    }
+
+    .quota-bar-fill.green { background: linear-gradient(90deg, #00d68f, #00f5a0); }
+    .quota-bar-fill.yellow { background: linear-gradient(90deg, #ffb547, #ffd280); }
+    .quota-bar-fill.red { background: linear-gradient(90deg, #ff5a5a, #ff8080); }
+
+    /* ── CREW ── */
+    .crew { background: var(--navy-deep); }
+
+    .crew-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .crew-card {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 12px;
+      padding: 1.4rem;
+      text-align: center;
+    }
+
+    .crew-avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-accent), var(--cyan-beacon));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin: 0 auto 0.8rem;
+      color: #fff;
+    }
+
+    .crew-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .crew-card .crew-role { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+
+    .crew-stats {
+      display: flex;
+      justify-content: space-around;
+      gap: 0.5rem;
+    }
+
+    .crew-stat { text-align: center; }
+    .crew-stat .cs-num { font-size: 1.1rem; font-weight: 800; color: var(--blue-glow); }
+    .crew-stat .cs-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── CTA ── */
+    .cta {
+      background: linear-gradient(160deg, #0f1d38 0%, var(--navy-deep) 100%);
+      padding: 5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(43, 127, 255, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .cta p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy-mid);
+      border-top: 1px solid var(--navy-border);
+      padding: 2.5rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--blue-accent); }
+
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .steps-row { grid-template-columns: 1fr; }
+      .steps-row::before { display: none; }
+      .arch-grid { grid-template-columns: 1fr; }
+      .feed-row { grid-template-columns: 60px 1fr 80px; }
+      .feed-row .t-ground { display: none; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-actions { flex-direction: column; align-items: center; }
+      .tile-widget { flex-direction: column; text-align: center; }
+    }
   </style>
 </head>
 <body>
-  <nav>
-    <div class="logo">Fishing Log</div>
-    <div class="badge" style="border-color: var(--accent); color: var(--accent);">PLATO Connected</div>
-  </nav>
-  <div class="container hero">
-    <h1>Intelligence That<br><span>Compounds</span></h1>
-    <p class="sub">File what matters. Accumulate intelligence. Query when you need it. PLATO turns raw activity into compound knowledge.</p>
-    <div class="badge-row">
-      <span class="badge">Delta Recording</span>
-      <span class="badge">Presence Tracking</span>
-      <span class="badge">Queryable History</span>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-brand">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#2b7fff" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="8" stroke="#2b7fff" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="14" cy="14" r="3" fill="#00c2ff"/>
+      <line x1="14" y1="1" x2="14" y2="5" stroke="#2b7fff" stroke-width="1.5"/>
+      <line x1="14" y1="23" x2="14" y2="27" stroke="#2b7fff" stroke-width="1.5"/>
+      <line x1="1" y1="14" x2="5" y2="14" stroke="#2b7fff" stroke-width="1.5"/>
+      <line x1="23" y1="14" x2="27" y2="14" stroke="#2b7fff" stroke-width="1.5"/>
+    </svg>
+    Cocapn / Fishing Log AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#arch">Architecture</a></li>
+    <li><a href="#crew">Crew</a></li>
+    <li><a href="#" class="nav-cta">Get Started</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="radar-bg">
+    <div class="radar-ring"></div>
+    <div class="radar-ring"></div>
+    <div class="radar-ring"></div>
+    <div class="radar-ring"></div>
+    <div class="radar-ring"></div>
+  </div>
+
+  <div class="hero-badge">
+    <span class="dot"></span>
+    PLATO Connected — Fleet Active
+  </div>
+
+  <h1>
+    Every haul.<br />
+    Every ground.<br />
+    Every season.<br />
+    <span class="highlight">Tiled.</span>
+  </h1>
+
+  <p class="hero-sub">
+    The captain's catch intelligence layer. Log each haul as a tile — species, weight, ground, crew, weather — and PLATO weaves it into fishing knowledge you can query from the bridge, the dock, or the market.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+      Start Logging
+    </a>
+    <a href="#how" class="btn-secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      See How It Works
+    </a>
+  </div>
+
+  <div class="tile-widget">
+    <div class="tile-indicator"></div>
+    <div>
+      <div class="w-label">Live PLATO Room Activity</div>
+      <div class="w-count" id="tile-count">4,218</div>
+    </div>
+    <div class="w-room">
+      Room <span>fishinglog-agent</span><br/>
+      <span style="color:var(--text-muted); font-size:0.78rem;">Delta sync active</span>
     </div>
   </div>
-  <section class="section">
-    <div class="container">
-      <h2>Everything That Matters, Filed</h2>
-      <p class="lead">Stop losing track. Start compounding.</p>
-      <div class="grid-3">
-        <div class="card">
-          <h3>Catch Tracking</h3>
-          <p>Log every haul by species, weight, and location. The room knows what you've caught, where, and when. No more handwritten logbooks lost to salt water.</p>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-label">Capabilities</div>
+    <h2 class="section-title">Everything a working boat needs</h2>
+    <p class="section-sub">Built for commercial operations — not adapted from a consumer app. Every feature serves the way a real crew fishes.</p>
+
+    <div class="feature-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10"/>
+            <path d="M12 6v6l4 2"/>
+            <path d="M22 2L12 12"/>
+          </svg>
         </div>
-        <div class="card">
-          <h3>Ground Mapping</h3>
-          <p>Build a fishing ground map from accumulated tiles. Tuna reported at Buoy 7 three times this season. Your experience becomes cartography.</p>
+        <h3>Catch Tracking</h3>
+        <p>Log every species, weight, and count at haul time — not hours later at the processor. Timestamps are locked to the moment of landing. You can query any catch window by date, ground, or crew assignment and get an auditable record that's cleaner than a paper log.</p>
+        <span class="feature-tag">Species · Weight · Count · Time</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+            <line x1="9" y1="3" x2="9" y2="18"/>
+            <line x1="15" y1="6" x2="15" y2="21"/>
+          </svg>
         </div>
-        <div class="card">
-          <h3>Quota Guard</h3>
-          <p>Track quota status by species and area. When you're approaching a limit, the room alerts. Stay legal without constant manual calculation.</p>
+        <h3>Ground Mapping</h3>
+        <p>Every catch is pinned to a fishing ground — not just a GPS coordinate. Define your grounds once (Hecate Strait North, Lime Ridge, the Fingers) and PLATO builds a layered picture over seasons. Know which grounds are heating up before you steam there. Know which ones gave up three years ago.</p>
+        <span class="feature-tag">Grounds · Hot Zones · Historical Drift</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <polyline points="9 12 11 14 15 10"/>
+          </svg>
         </div>
-        <div class="card">
-          <h3>Weather Correlation</h3>
-          <p>Tie catch data to weather conditions. Fish go deep when barometric pressure drops. Your historical patterns become predictive models.</p>
+        <h3>Quota Guard</h3>
+        <p>IFQ species, area closures, and seasonal limits — the system tracks your utilization against every active quota in real time. When you're at 80% of a species limit in a given area, you know before the next haul comes aboard. Quota Guard doesn't stop you — it shows you the water before you're in it.</p>
+        <span class="feature-tag">IFQ · Area Limits · Season Caps</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.7 16.7a8 8 0 1 1-11.4 0"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+            <path d="M9 9a3 3 0 1 1 4.24 4.24"/>
+            <line x1="17" y1="17" x2="17" y2="17"/>
+          </svg>
         </div>
-        <div class="card">
-          <h3>Crew Attribution</h3>
-          <p>Know who caught what. Track crew performance across seasons. The room maintains chain of custody for every haul.</p>
+        <h3>Weather Correlation</h3>
+        <p>Tie barometric pressure, sea state, wind direction, and water temperature to each haul. Over time PLATO surfaces patterns: halibut come up on a falling barometer in the Fingers, or lingcod stack on the south side when the north wind pushes cold water in. Your memory, made queryable.</p>
+        <span class="feature-tag">Barometer · Sea State · Wind · SST</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="section-label">Workflow</div>
+    <h2 class="section-title">From haul to intelligence in three steps</h2>
+    <p class="section-sub">No dashboards to configure. No spreadsheets to reconcile. File the tile — PLATO handles the accumulation.</p>
+
+    <div class="steps-row">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>File a Tile</h3>
+        <p>After each haul, submit a catch tile: species, weight, ground name, depth band, crew member, and current weather snapshot. Takes under 30 seconds from the rail.</p>
+        <code class="step-cmd">tile_log --species "pacific cod" --weight 840 --ground "Lime Ridge" --crew marta</code>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>PLATO Accumulates</h3>
+        <p>Each tile goes into the PLATO room as a delta — a structured record with your boat's presence tag. Over hauls and seasons, PLATO builds a cross-referenced knowledge mesh across the fleet's catch history.</p>
+        <code class="step-cmd">plato.push(tile) → delta queued</code>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Query Your Intelligence</h3>
+        <p>Ask natural questions from any device: "What's my limit utilization for yelloweye in 3B after last week's hauls?" PLATO resolves the query against your accumulated tiles and returns a structured answer — not a spreadsheet to interpret.</p>
+        <code class="step-cmd">plato.query("limit utilization yelloweye 3B")</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PLATO ARCHITECTURE ── -->
+<section class="plato" id="arch">
+  <div class="container">
+    <div class="section-label">Under The Hood</div>
+    <h2 class="section-title">Why PLATO makes this different</h2>
+    <p class="section-sub">Traditional logging is a filing cabinet. PLATO is a crew that never forgets and knows how to connect the dots.</p>
+
+    <div class="arch-grid">
+      <div class="arch-card">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2b7fff" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Delta Architecture
+        </h3>
+        <p>Every catch tile is a <strong>delta</strong> — a precise, self-contained record of one haul's contribution to the broader picture. PLATO doesn't sync full state. It applies your delta, reconciles it against the fleet's shared presence, and updates your local view within seconds.</p>
+        <p>This means the system works even when you're 50 miles offshore with intermittent connectivity. Your tile is filed and your quota numbers are correct. When the connection comes back, PLATO reconciles silently in the background.</p>
+
+        <div class="delta-flow">
+          <div class="delta-item">
+            <span class="d-icon">🎯</span>
+            <div class="d-text"><strong>Haul logged</strong> — tile sealed with species, weight, ground, crew, timestamp, and weather delta</div>
+          </div>
+          <div class="delta-item success">
+            <span class="d-icon">✓</span>
+            <div class="d-text"><strong>Delta broadcast</strong> — fishinglog-agent receives the structured delta, validates schema, applies to room state</div>
+          </div>
+          <div class="delta-item cyan">
+            <span class="d-icon">🔄</span>
+            <div class="d-text"><strong>Presence updated</strong> — boat's catch record updated across all connected clients without a full refresh</div>
+          </div>
+          <div class="delta-item warning">
+            <span class="d-icon">⚠</span>
+            <div class="d-text"><strong>Quota Guard triggered</strong> — if delta pushes utilization past a threshold, presence flags the captain's feed immediately</div>
+          </div>
         </div>
-        <div class="card">
-          <h3>Season Analysis</h3>
-          <p>Compare this season to the last five. PLATO surfaces trends: which grounds are declining, which are emerging, which bait works best.</p>
+      </div>
+
+      <div class="arch-card">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00c2ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Presence Architecture
+        </h3>
+        <p>PLATO rooms maintain a <strong>presence vector</strong> for each connected participant. Your boat's presence isn't just "online" — it carries a live snapshot of your current catch state: today's hauls, running totals, quota utilization. Any authorized crew member with access can read it from any device.</p>
+
+        <div class="presence-diagram">
+          <span class="line comment"># PLATO room: fishinglog-agent</span>
+          <span class="line">&nbsp;</span>
+          <span class="line"><span class="key">vessel:</span> <span class="val">"FV SouthernCross"</span></span>
+          <span class="line"><span class="key">session_id:</span> <span class="val">"sc-2026-05-05-0312"</span></span>
+          <span class="line"><span class="key">presence:</span></span>
+          <span class="line">  <span class="key">catch_today:</span> <span class="val">[{species:"pacific_cod",kg:840,ground:"LimeRidge",crew:"marta"},</span></span>
+          <span class="line">                  <span class="val">{species:"lingcod",kg:312,ground:"FingersS",crew:"devon"}]</span></span>
+          <span class="line">  <span class="key">quota_util:</span> <span class="val">{"yelloweye_3B":0.73,"pacific_cod_5D":0.41}</span></span>
+          <span class="line">  <span class="key">weather_snapshot:</span> <span class="val">{baro:1008,wind:"NW12",sst:8.4}</span></span>
+          <span class="line">  <span class="key">delta_cursor:</span> <span class="val">"d-48291"</span></span>
+          <span class="line">&nbsp;</span>
+          <span class="line comment"># Connected: captain_iPad · deck_display · shore_office</span>
         </div>
 
+        <p style="margin-top: 1rem; margin-bottom: 0;">Because presence carries real state — not just status — every display in your fleet shows the same truth. No more "what did we actually land on Tuesday?"</p>
       </div>
     </div>
-  </section>
-  <section class="section" style="background: var(--surface);">
-    <div class="container">
-      <h2>How It Works</h2>
-      <p class="lead">Three steps from activity to intelligence.</p>
-      <div class="how-box">
-        <div class="how-step">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <h4>Start a Room</h4>
-            <p>Create a PLATO room for your operation. Every tile you file goes into that room -- the room becomes the complete record.</p>
-          </div>
+  </div>
+</section>
+
+<!-- ── LIVE FEED ── -->
+<section class="live-feed" id="feed">
+  <div class="feed-inner">
+    <div class="feed-header">
+      <h2>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00d68f" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+        Live Catch Feed
+      </h2>
+      <span style="font-size:0.8rem; color: var(--text-muted);">Simulated fleet activity — PLATO room <code style="font-size:0.78rem; color:var(--blue-glow); background:rgba(43,127,255,0.08); padding:0.1rem 0.4rem; border-radius:4px;">fishinglog-agent</code></span>
+    </div>
+
+    <div class="feed-list">
+      <div class="feed-row" style="font-weight:700; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">
+        <span>Time</span><span>Species / Ground</span><span>Weight</span><span>Status</span>
+      </div>
+      <div class="feed-row">
+        <span class="t-time">03:41</span>
+        <span class="t-species t-ground">Pacific Cod — Lime Ridge</span>
+        <span class="t-weight">+840 kg</span>
+        <span class="t-badge synced">Synced</span>
+      </div>
+      <div class="feed-row">
+        <span class="t-time">03:38</span>
+        <span class="t-species t-ground">Lingcod — Fingers South</span>
+        <span class="t-weight">+312 kg</span>
+        <span class="t-badge synced">Synced</span>
+      </div>
+      <div class="feed-row">
+        <span class="t-time">03:12</span>
+        <span class="t-species t-ground">Yelloweye Rockfish — 3B Closure Edge</span>
+        <span class="t-weight">+94 kg</span>
+        <span class="t-badge quota">Quota Alert</span>
+      </div>
+      <div class="feed-row">
+        <span class="t-time">02:55</span>
+        <span class="t-species t-ground">Sablefish —大一 Mountain</span>
+        <span class="t-weight">+1,204 kg</span>
+        <span class="t-badge synced">Synced</span>
+      </div>
+      <div class="feed-row">
+        <span class="t-time">02:31</span>
+        <span class="t-species t-ground">Dover Sole — Hecate Strait North</span>
+        <span class="t-weight">+2,180 kg</span>
+        <span class="t-badge synced">Synced</span>
+      </div>
+      <div class="feed-row">
+        <span class="t-time">01:48</span>
+        <span class="t-species t-ground">Albacore Tuna — WG Line</span>
+        <span class="t-weight">+640 kg</span>
+        <span class="t-badge logged">Logged</span>
+      </div>
+      <div class="feed-row">
+        <span class="t-time">01:22</span>
+        <span class="t-species t-ground">Petrale Sole — Stevens Pass</span>
+        <span class="t-weight">+3,400 kg</span>
+        <span class="t-badge synced">Synced</span>
+      </div>
+      <div class="feed-row">
+        <span class="t-time">00:55</span>
+        <span class="t-species t-ground">Pacific Hake — Cape St. James</span>
+        <span class="t-weight">+8,200 kg</span>
+        <span class="t-badge synced">Synced</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── QUOTA ── -->
+<section class="quota-strip" id="quota">
+  <div class="quota-inner">
+    <div class="section-label">Real-Time Limits</div>
+    <h2>Quota Guard Status</h2>
+    <p>Current season utilization across managed species and areas — updated after each haul.</p>
+
+    <div class="quota-bars">
+      <div class="quota-row">
+        <div class="quota-meta">
+          <span class="q-name">Yelloweye Rockfish — Area 3B</span>
+          <span class="q-numbers">7,420 kg / 10,150 kg</span>
         </div>
-        <div class="how-step">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <h4>File as You Work</h4>
-            <p>Got a result? A decision? A question? One entry files it to PLATO. Delta recording means you store what changed, not the full state.</p>
-          </div>
+        <div class="quota-bar-bg">
+          <div class="quota-bar-fill yellow" style="width: 73.1%"></div>
         </div>
-        <div class="how-step">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <h4>Query the Intelligence</h4>
-            <p>Ask questions across your accumulated history. What was the pattern last season? Which approach worked better? PLATO answers from your compound knowledge base.</p>
-          </div>
+      </div>
+      <div class="quota-row">
+        <div class="quota-meta">
+          <span class="q-name">Pacific Cod — Area 5D</span>
+          <span class="q-numbers">15,620 kg / 38,000 kg</span>
+        </div>
+        <div class="quota-bar-bg">
+          <div class="quota-bar-fill green" style="width: 41.1%"></div>
+        </div>
+      </div>
+      <div class="quota-row">
+        <div class="quota-meta">
+          <span class="q-name">Dover Sole — Hecate Strait</span>
+          <span class="q-numbers">29,840 kg / 31,000 kg</span>
+        </div>
+        <div class="quota-bar-bg">
+          <div class="quota-bar-fill red" style="width: 96.3%"></div>
+        </div>
+      </div>
+      <div class="quota-row">
+        <div class="quota-meta">
+          <span class="q-name">Sablefish — All Areas</span>
+          <span class="q-numbers">8,100 kg / 22,000 kg</span>
+        </div>
+        <div class="quota-bar-bg">
+          <div class="quota-bar-fill green" style="width: 36.8%"></div>
+        </div>
+      </div>
+      <div class="quota-row">
+        <div class="quota-meta">
+          <span class="q-name">Lingcod — Area 3C/D</span>
+          <span class="q-numbers">11,200 kg / 18,500 kg</span>
+        </div>
+        <div class="quota-bar-bg">
+          <div class="quota-bar-fill yellow" style="width: 60.5%"></div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
+<!-- ── CREW ── -->
+<section class="crew" id="crew">
   <div class="container">
-    <div class="plato-box">
-      <h3>PLATO: The Intelligence Layer</h3>
-      <p>PLATO's delta recording means you only store what changed -- not full snapshots. 95-99% storage reduction. 100% accuracy. Your data compounds over time, not just fills up.</p>
-      <div class="stats-row">
-        <div class="stat"><div class="num">95-99%</div><div class="label">Storage Reduction</div></div>
-        <div class="stat"><div class="num">100%</div><div class="label">Record Accuracy</div></div>
-        <div class="stat"><div class="num">infinity</div><div class="label">Compounding Value</div></div>
+    <div class="section-label">Attribution</div>
+    <h2 class="section-title">Catch Attribution by Crew</h2>
+    <p class="section-sub">Every tile carries a crew tag. Track individual landing totals, review performance across grounds, and settle shares from the same feed.</p>
+
+    <div class="crew-grid">
+      <div class="crew-card">
+        <div class="crew-avatar">MP</div>
+        <h4>Marta Pérez</h4>
+        <div class="crew-role">Deck Boss</div>
+        <div class="crew-stats">
+          <div class="crew-stat"><div class="cs-num">18</div><div class="cs-label">Hauls</div></div>
+          <div class="crew-stat"><div class="cs-num">4,820</div><div class="cs-label">kg Today</div></div>
+        </div>
+      </div>
+      <div class="crew-card">
+        <div class="crew-avatar">DK</div>
+        <h4>Devon Kawasaki</h4>
+        <div class="crew-role">Mate</div>
+        <div class="crew-stats">
+          <div class="crew-stat"><div class="cs-num">14</div><div class="cs-label">Hauls</div></div>
+          <div class="crew-stat"><div class="cs-num">3,140</div><div class="cs-label">kg Today</div></div>
+        </div>
+      </div>
+      <div class="crew-card">
+        <div class="crew-avatar">TN</div>
+        <h4>Tao Nga</h4>
+        <div class="crew-role">Processor</div>
+        <div class="crew-stats">
+          <div class="crew-stat"><div class="cs-num">22</div><div class="cs-label">Hauls</div></div>
+          <div class="crew-stat"><div class="cs-num">5,610</div><div class="cs-label">kg Today</div></div>
+        </div>
+      </div>
+      <div class="crew-card">
+        <div class="crew-avatar">SN</div>
+        <h4>Sven Nakamura</h4>
+        <div class="crew-role">Engineer / Relief</div>
+        <div class="crew-stats">
+          <div class="crew-stat"><div class="cs-num">9</div><div class="cs-label">Hauls</div></div>
+          <div class="crew-stat"><div class="cs-num">1,980</div><div class="cs-label">kg Today</div></div>
+        </div>
       </div>
     </div>
   </div>
-  <section class="cta">
-    <div class="container">
-      <h2>Start Compounding Your Intelligence</h2>
-      <p>Every entry compounds. Every query surfaces something new.</p>
-      <a href="https://github.com/SuperInstance/fishinglog-agent" class="btn">View on GitHub</a>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta" id="join">
+  <div class="container">
+    <h2>Your next haul starts<br />with a tile.</h2>
+    <p>Join the fleet running PLATO-connected catch logging. One file per haul. Infinite intelligence over seasons.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+        Deploy Fishing Log AI
+      </a>
+      <a href="#" class="btn-secondary">Read the Documentation</a>
     </div>
-  </section>
-  <div class="live-bar">
-    <span><span class="live-dot"></span>PLATO rooms active -- intelligence compounding</span>
   </div>
-  <footer>
-    <p>Fishing Log is part of the Cocapn fleet.</p>
-  </footer>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="13" stroke="#2b7fff" stroke-width="1.5"/>
+        <circle cx="14" cy="14" r="3" fill="#00c2ff"/>
+      </svg>
+      Cocapn
+    </div>
+    <ul class="footer-links">
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">PLATO Overview</a></li>
+      <li><a href="#">Cocapn Fleet</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <div class="footer-copy">&copy; 2026 Cocapn. Fleet architecture for agents that work.</div>
+  </div>
+</footer>
+
+<!-- ── LIVE COUNT ANIMATION ── -->
+<script>
+  // Animate tile count up/down gently to simulate live activity
+  (function () {
+    const el = document.getElementById('tile-count');
+    let base = 4218;
+    function jitter() {
+      base += Math.random() > 0.5 ? 1 : -1;
+      el.textContent = base.toLocaleString();
+      setTimeout(jitter, 3000 + Math.random() * 4000);
+    }
+    setTimeout(jitter, 2000);
+  })();
+</script>
+
 </body>
 </html>
